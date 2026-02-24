@@ -27,3 +27,24 @@ price_df['price_date'] = pd.to_datetime(price_df['price_date'])
 print("\n--- New Data Types for Dates ---")
 print(f"Client date_activ type: {client_df['date_activ'].dtype}")
 print(f"Price price_date type: {price_df['price_date'].dtype}")
+
+# 1. Fill channel_sales with the most frequent value (Mode)
+channel_mode = client_df['channel_sales'].mode()[0]
+client_df['channel_sales'] = client_df['channel_sales'].fillna(channel_mode)
+
+# 2. Fill origin_up with the most frequent value (Mode)
+origin_mode = client_df['origin_up'].mode()[0]
+client_df['origin_up'] = client_df['origin_up'].fillna(origin_mode)
+
+# 3. Final Check: Everything should be 0 now
+print("\n--- Final Null Check ---")
+print(client_df.isnull().sum())
+
+
+
+
+
+
+
+
+
