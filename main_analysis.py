@@ -40,6 +40,43 @@ client_df['origin_up'] = client_df['origin_up'].fillna(origin_mode)
 print("\n--- Final Null Check ---")
 print(client_df.isnull().sum())
 
+# Merge two datasets on the "id" columns
+merged_df = pd.merge(client_df, price_df, on="id")
+
+# Check the status of the merged_df
+print("\n ---merged data shape ---")
+print(f"Original Client Rows: {len(client_df)}")
+print(f"New Merged Rows: {len(merged_df)}")
+
+# Preview the combined Data
+print(merged_df.head())
+
+# Calculating the price difference for each customer
+price_diff = merged_df.groupby("id").agg({"price_off_peak_var":["mean", "min", "max"],"churn":"mean"}).reset_index()
+# Structure the column names
+price_diff.columns = ["id", "off_peak_mean", "off_peak_min", "off_peak_max", "churn"]
+
+# Feature Engineering
+price_diff["price_spread"]= price_diff["off_peak_max"] - price_diff["off_peak_min"]
+
+print("\n--- price_spread feature---")
+print(price_diff.head())
+
+# Groupby churn to see the average price_spread
+churn_analysis = price_diff.groupby("churn")["price_spread"].mean()
+print("\n--- average price spread by churn status---")
+print(churn_analysis)
+
+# Price Sensitivity
+churn_analysis = price_diff.groupby('churn')['price_spread'].mean()
+print("\n--- Summary: Average Price Spread by Churn Status ---")
+print(churn_analysis)
+
+price_diff.to_csv("processed_price_data.csv", index=False)
+print("\nSuccess: Processed data saved to 'processed_price_data.csv'")
+
+
+
 
 
 
